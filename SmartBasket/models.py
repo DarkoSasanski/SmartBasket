@@ -1,0 +1,116 @@
+from django.contrib.auth.models import User
+from django.db import models
+
+# Create your models here.
+
+
+class Market(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Customer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    address = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Salesman(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Deliveryman(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.FloatField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='images/')
+    description = models.TextField()
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class ShoppingCart(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.customer}\'s cart'
+
+
+class ShoppingCartItem(models.Model):
+    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.shopping_cart} - {self.product}'
+
+
+class PickUpOrder(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    date_of_pickup = models.DateTimeField()
+    phone_number = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f'Pick up order for {self.first_name} {self.last_name}'
+
+
+class DeliveryOrder(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+    PAYMENT_CHOICES = (
+        ('door', 'Наплата при достава'),
+        ('online', 'Наплата со картичка'),
+    )
+    payment_option = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
+
+    def __str__(self):
+        return f'Delivery order for {self.first_name} {self.last_name}'
+
+
+class PickUpOrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(PickUpOrder, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.product} - {self.quantity}'
+
+
+class DeliveryOrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(DeliveryOrder, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.product} - {self.quantity}'
+
