@@ -1,12 +1,15 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+
 # Create your models here.
 
 
 class Market(models.Model):
     name = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    phone_number = models.CharField(max_length=100, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -41,7 +44,7 @@ class Category(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return f'{self.name} at {self.market}'
 
 
 class Product(models.Model):
@@ -58,9 +61,10 @@ class Product(models.Model):
 
 class ShoppingCart(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.customer}\'s cart'
+        return f'{self.customer}\'s cart at market {self.market}'
 
 
 class ShoppingCartItem(models.Model):
@@ -77,7 +81,8 @@ class PickUpOrder(models.Model):
     last_name = models.CharField(max_length=100)
     date_of_pickup = models.DateTimeField()
     phone_number = models.CharField(max_length=100)
-
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+    picked_up = models.BooleanField(default=False)
     def __str__(self):
         return f'Pick up order for {self.first_name} {self.last_name}'
 
@@ -91,7 +96,10 @@ class DeliveryOrder(models.Model):
         ('door', 'Наплата при достава'),
         ('online', 'Наплата со картичка'),
     )
-    payment_option = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
+    payment_option = models.CharField(max_length=30, choices=PAYMENT_CHOICES)
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+    deliveryman = models.ForeignKey(Deliveryman, on_delete=models.CASCADE, null=True, blank=True)
+    delivered = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Delivery order for {self.first_name} {self.last_name}'
@@ -113,4 +121,3 @@ class DeliveryOrderItem(models.Model):
 
     def __str__(self):
         return f'{self.product} - {self.quantity}'
-
