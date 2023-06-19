@@ -1,0 +1,74 @@
+{% extends "home_base.html" %}
+{% block title %}Register-Customer{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="text-danger fw-bold">Регистрација за купувачи</h1>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-12" >
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.password1.label_tag }}
+                            {{ form.password1 }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.password2.label_tag }}
+                            {{ form.password2 }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.address.label_tag }}
+                            {{ form.address }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.phone_number.label_tag }}
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+                    {% if error != 'None' %}
+                        <p class="text-danger text-center mb-3">{{ error }}</p>
+                    {% endif %}
+                    <button type="submit" class="btn btn-outline-danger w-100">Регистријај се</button>
+
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-3 text-center" >
+                <a href="{% url 'login-cust' %}">Имате профил? Најави се</a> <br />
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

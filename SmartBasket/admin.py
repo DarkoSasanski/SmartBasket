@@ -25,6 +25,11 @@ class MarketAdmin(admin.ModelAdmin):
             return True
         return False
 
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if Salesman.objects.filter(user=request.user).exists():
@@ -51,6 +56,9 @@ class CustomerAdmin(admin.ModelAdmin):
             return True
         return False
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 admin.site.register(Customer, CustomerAdmin)
 
@@ -68,6 +76,9 @@ class SalesmanAdmin(admin.ModelAdmin):
             return True
         if obj and obj.user == request.user:
             return True
+        return False
+
+    def has_delete_permission(self, request, obj=None):
         return False
 
 
@@ -89,6 +100,9 @@ class DeliverymanAdmin(admin.ModelAdmin):
             return True
         return False
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 admin.site.register(Deliveryman, DeliverymanAdmin)
 
@@ -102,6 +116,13 @@ class ProductAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and Salesman.objects.filter(user=request.user, market=obj.category.market).exists():
+            return True
+        return False
+
+    def has_delete_permission(self, request, obj=None):
         if request.user.is_superuser:
             return True
         if obj and Salesman.objects.filter(user=request.user, market=obj.category.market).exists():
@@ -136,6 +157,13 @@ class ShoppingCartAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and obj.customer.user == request.user:
+            return True
+        return False
+
+    def has_delete_permission(self, request, obj=None):
         if request.user.is_superuser:
             return True
         if obj and obj.customer.user == request.user:
@@ -182,6 +210,14 @@ class PickUpOrderAdmin(admin.ModelAdmin):
             return obj.market == salesmen.market
         return False
 
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and Salesman.objects.filter(user=request.user).exists():
+            salesmen = Salesman.objects.get(user=request.user)
+            return obj.market == salesmen.market
+        return False
+
 
 admin.site.register(PickUpOrder, PickUpOrderAdmin)
 
@@ -201,6 +237,16 @@ class DeliveryOrderAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and Salesman.objects.filter(user=request.user).exists():
+            salesmen = Salesman.objects.get(user=request.user)
+            return obj.market == salesmen.market
+        if obj and obj.deliveryman.user == request.user:
+            return True
+        return False
+
+    def has_delete_permission(self, request, obj=None):
         if request.user.is_superuser:
             return True
         if obj and Salesman.objects.filter(user=request.user).exists():

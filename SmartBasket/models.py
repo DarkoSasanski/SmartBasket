@@ -7,6 +7,7 @@ from django.db import models
 
 class Market(models.Model):
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='images/')
     address = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
@@ -83,6 +84,7 @@ class PickUpOrder(models.Model):
     phone_number = models.CharField(max_length=100)
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
     picked_up = models.BooleanField(default=False)
+
     def __str__(self):
         return f'Pick up order for {self.first_name} {self.last_name}'
 

@@ -1,0 +1,39 @@
+{% extends "home_base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <img class="w-100" src="https://i.ibb.co/bXKWMkC/781f6233d7f281ad477dd8adf0ba6476-3.jpg" alt="781f6233d7f281ad477dd8adf0ba6476-3"/>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-4 text-center">
+                <a href="#" class="btn btn-danger">Пребарај ги маркетите</a>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-3 text-center border-card" >
+                <span class="fw-bold" style="font-size: 1.3em;">Продавачи</span> <br />
+                <a href="{% url 'login-sale' %}" class="btn btn-outline-secondary mt-3">Најави се</a> <br />
+                <a href="{% url 'register-sale' %}" class="btn btn-outline-secondary mt-3">Регистрирај се</a>
+            </div>
+            <div class="col-md-3 text-center border-card margin-card">
+                <span class="fw-bold" style="font-size: 1.3em;">Купувачи</span> <br />
+                <a href="{% url 'login-cust' %}" class="btn btn-outline-secondary mt-3">Најави се</a> <br />
+                <a href="{% url 'register-cust' %}" class="btn btn-outline-secondary mt-3">Регистрирај се</a>
+            </div>
+            <div class="col-md-3 text-center margin-card mb-2">
+                <span class="fw-bold" style="font-size: 1.3em;">Доставувачи</span> <br />
+                <a href="{% url 'login-del' %}" class="btn btn-outline-secondary mt-3">Најави се</a> <br />
+                <a href="{% url 'register-del' %}" class="btn btn-outline-secondary mt-3">Регистрирај се</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

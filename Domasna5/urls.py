@@ -18,7 +18,16 @@ from django.contrib import admin
 from django.urls import path
 
 from Domasna5 import settings
+from SmartBasket.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", index, name="index"),
+    path("index", index, name="index"),
+    path("login-cust", login_customer, name="login-cust"),
+    path("login-sale", login_salesman, name="login-sale"),
+    path("login-del", login_deliveryman, name="login-del"),
+    path("register-cust", register_customer, name="register-cust"),
+    path("register-sale", register_salesman, name="register-sale"),
+    path("register-del", register_deliveryman, name="register-del"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
