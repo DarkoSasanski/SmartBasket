@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import *
 
 
 class CustomLoginForm(forms.Form):
@@ -68,3 +69,28 @@ class DeliverymanRegistrationForm(UserCreationForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("This email address is already in use.")
         return email
+
+
+class PickUpOrderForm(forms.ModelForm):
+    class Meta:
+        model = PickUpOrder
+        exclude = ['market', 'picked_up']
+
+    def __init__(self, *args, **kwargs):
+        super(PickUpOrderForm, self).__init__(*args, **kwargs)
+        for v in self.visible_fields():
+            v.field.widget.attrs['class'] = 'form-control'
+            if v.name == 'date_of_pickup':
+                v.field.widget = forms.DateInput(attrs={'type': 'datetime-local'})
+                v.field.widget.attrs['class'] = 'form-control'
+
+
+class DeliveryOrderForm(forms.ModelForm):
+    class Meta:
+        model = DeliveryOrder
+        exclude = ['market', 'delivered', 'deliveryman']
+
+    def __init__(self, *args, **kwargs):
+        super(DeliveryOrderForm, self).__init__(*args, **kwargs)
+        for v in self.visible_fields():
+            v.field.widget.attrs['class'] = 'form-control'

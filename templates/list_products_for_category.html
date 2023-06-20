@@ -1,0 +1,62 @@
+{% extends "customer_base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="text-danger fw-bold">Производи</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-8">
+                <form action="/products/{{ category.id }}" method="GET">
+                    <div class="input-group mb-3">
+                        {% if search %}
+                            <input type="text" class="form-control" placeholder="Пребарај производи" name="search"
+                                   value="{{ search }}"/>
+                        {% endif %}
+                        {% if not search %}
+                            <input type="text" class="form-control" placeholder="Пребарај производи" name="search"/>
+                        {% endif %}
+                        <button class="btn btn-outline-danger" type="submit" id="button-addon2">Пребарај</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-5 mb-5">
+            {% for p in products %}
+                <div class="col-md-4">
+                    <div class="card  ms-auto me-auto" style="width: 18rem;">
+                        <img src="{{ MEDIA_URL }}{{ p.image.url }}" class="card-img-top" style="height: 20rem"
+                             alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title text-center fw-bold mb-4" style="font-size: 2rem">{{ p.name }}</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="card-text">{{ p.price }} MKD</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p style="text-align: right">
+                                        {% if p.quantity > 0 %}
+                                            <span class="badge bg-success">Во залиха</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Нема во залиха</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <a href="/product-detail/{{ p.id }}" class="btn btn-danger">Избери</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

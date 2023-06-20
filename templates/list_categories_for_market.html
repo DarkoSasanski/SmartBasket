@@ -1,0 +1,43 @@
+{% extends "customer_base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="text-danger fw-bold">Категории</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-8">
+                <form action="/categories/{{ market.id }}" method="GET">
+                    <div class="input-group mb-3">
+                        {% if search %}
+                            <input type="text" class="form-control" placeholder="Пребарај категории" name="search" value="{{ search }}"/>
+                        {% endif %}
+                        {% if not search %}
+                            <input type="text" class="form-control" placeholder="Пребарај категории" name="search" />
+                        {% endif %}
+                        <button class="btn btn-outline-danger" type="submit" id="button-addon2">Пребарај</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-5 mb-5">
+            {% for c in categories %}
+                <div class="col-md-3 text-center">
+                   <div class="w-75 ms-auto me-auto">
+                        <a class="btn btn-outline-info w-100 fw-bold" href="/products/{{ c.id }}">{{ c.name }}</a>
+                   </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+
+    </div>
+{% endblock %}

@@ -22,7 +22,7 @@ def login_customer(request):
             if user is not None:
                 if Customer.objects.filter(user=user).exists():
                     login(request, user)
-                    return redirect('/index')
+                    return redirect('/markets')
         err = 'Invalid username or password'
     return render(request, 'login_customer.html', {'form': form, 'error': err})
 
@@ -116,3 +116,130 @@ def register_deliveryman(request):
             return redirect('/login-del')
         err = 'Invalid input'
     return render(request, 'register_deliveryman.html', {'form': form, 'error': err})
+
+
+def list_markets(request):
+    search = request.GET.get('search')
+    if search is None or search == '':
+        markets = Market.objects.all()
+    else:
+        markets = Market.objects.filter(name__icontains=search).all()
+    return render(request, 'list_markets.html', {'markets': markets, 'search': search})
+
+
+def list_categories_for_market(request, market_id):
+    search = request.GET.get('search')
+    market = Market.objects.get(id=market_id)
+    if search is None or search == '':
+        categories = Category.objects.filter(market=market).all()
+    else:
+        categories = Category.objects.filter(market=market, name__icontains=search).all()
+    return render(request, 'list_categories_for_market.html',
+                  {'categories': categories, 'market': market, 'search': search})
+
+
+def list_products_for_category(request, category_id):
+    search = request.GET.get('search')
+    category = Category.objects.get(id=category_id)
+    if search is None or search == '':
+        products = Product.objects.filter(category=category).all()
+    else:
+        products = Product.objects.filter(category=category, name__icontains=search).all()
+    return render(request, 'list_products_for_category.html',
+                  {'products': products, 'category': category, 'search': search})
+
+
+def product_details(request, product_id):
+    product = Product.objects.get(id=product_id)
+    return render(request, 'product_details.html', {'product': product, 'error': 'None'})
+
+
+def add_to_cart(request, product_id):
+    product = Product.objects.get(id=product_id)
+    if request.user.is_authenticated:
+        if Customer.objects.filter(user=request.user).exists():
+            customer = Customer.objects.get(user=request.user)
+            cart = ShoppingCart.objects.filter(customer=customer).first()
+            if cart is None:
+                cart = ShoppingCart(customer=customer, market=product.category.market)
+                cart.save()
+            elif cart.market != product.category.market:
+                return render(request, 'product_details.html',
+                              {'product': product, 'error': 'Already has a shopping cart for a different market'})
+            cart_item = ShoppingCartItem.objects.filter(shopping_cart=cart, product=product).first()
+            if int(request.POST.get('quantity')) > product.quantity:
+                return render(request, 'product_details.html', {'product': product, 'error': 'Not enough quantity'})
+            if cart_item is None:
+                cart_item = ShoppingCartItem(shopping_cart=cart, product=product, quantity=int(request.POST.get('quantity')))
+            else:
+                cart_item.quantity += int(request.POST.get('quantity'))
+            product.quantity -= int(request.POST.get('quantity'))
+            product.save()
+            cart_item.save()
+            return redirect('/categories/' + str(product.category.market.id))
+    return redirect('/login-cust')
+
+
+def list_shopping_cart(request):
+    if request.user.is_authenticated:
+        if Customer.objects.filter(user=request.user).exists():
+            customer = Customer.objects.get(user=request.user)
+            cart = ShoppingCart.objects.filter(customer=customer).first()
+            if cart is None:
+                return render(request, 'list_shopping_cart.html', {'cart': cart, 'error': 'No shopping cart'})
+            cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
+            total = 0
+            for cart_item in cart_items:
+                total += cart_item.product.price * cart_item.quantity
+            return render(request, 'list_shopping_cart.html', {'cart': cart, 'cart_items': cart_items, 'error': 'None',
+                                                               'total': total})
+    return redirect('/login-cust')
+
+
+def delete_cart(request, cart_id):
+    cart = ShoppingCart.objects.get(id=cart_id)
+    cart.delete()
+    return redirect('/markets')
+
+
+def delete_cart_item(request, cart_item_id):
+    cart_item = ShoppingCartItem.objects.get(id=cart_item_id)
+    cart_item.delete()
+    return redirect('/shopping-cart')
+
+
+def create_pickup_order(request):
+    if request.user.is_authenticated:
+        if Customer.objects.filter(user=request.user).exists():
+            customer = Customer.objects.get(user=request.user)
+            cart = ShoppingCart.objects.filter(customer=customer).first()
+            if cart is None:
+                return redirect('/shopping-cart')
+            cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
+            total = 0
+            for cart_item in cart_items:
+                total += cart_item.product.price * cart_item.quantity
+            if request.method == 'POST':
+                f=PickUpOrderForm(request.POST)
+                if f.is_valid():
+                    order = PickUpOrder(
+                        first_name=f.cleaned_data['first_name'],
+                        last_name=f.cleaned_data['last_name'],
+                        phone_number=f.cleaned_data['phone_number'],
+                        date_of_pickup=f.cleaned_data['date_of_pickup'],
+                        market=cart.market,
+                        picked_up=False
+                    )
+                    order.save()
+                    for cart_item in cart_items:
+                        order_item = PickUpOrderItem(
+                            order=order,
+                            product=cart_item.product,
+                            quantity=cart_item.quantity,
+                        )
+                        order_item.save()
+                    cart.delete()
+                    return redirect('/success_order')
+            return render(request, 'create_pickup_order.html', {'cart': cart, 'cart_items': cart_items,
+                                                                'total': total, 'form': PickUpOrderForm()})
+    return redirect('/login-cust')
