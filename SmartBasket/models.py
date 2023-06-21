@@ -84,6 +84,7 @@ class PickUpOrder(models.Model):
     phone_number = models.CharField(max_length=100)
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
     picked_up = models.BooleanField(default=False)
+    date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f'Pick up order for {self.first_name} {self.last_name}'
@@ -102,6 +103,7 @@ class DeliveryOrder(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
     deliveryman = models.ForeignKey(Deliveryman, on_delete=models.CASCADE, null=True, blank=True)
     delivered = models.BooleanField(default=False)
+    date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f'Delivery order for {self.first_name} {self.last_name}'

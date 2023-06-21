@@ -110,3 +110,16 @@ class PaymentForm(forms.Form):
         super(PaymentForm, self).__init__(*args, **kwargs)
         for v in self.visible_fields():
             v.field.widget.attrs['class'] = 'form-control'
+
+
+class AddProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        exclude = []
+
+    def __init__(self, *args, **kwargs):
+        super(AddProductForm, self).__init__(*args, **kwargs)
+        for v in self.visible_fields():
+            v.field.widget.attrs['class'] = 'form-control'
+            if v.name == 'category':
+                v.field.widget.attrs['class'] = 'form-select'

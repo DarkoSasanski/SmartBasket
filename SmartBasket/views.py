@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from .forms import *
 from .models import *
+import random
 
 
 # Create your views here.
@@ -306,3 +307,78 @@ def payment(request):
         if f.is_valid():
             return render(request, 'success_order.html')
     return render(request, 'payment.html', {'form': form})
+
+
+def list_products_for_salesman(request):
+    if request.user.is_authenticated:
+        if Salesman.objects.filter(user=request.user).exists():
+            salesman = Salesman.objects.get(user=request.user)
+            search = request.GET.get('search')
+            if search is None or search == '':
+                products = Product.objects.filter(category__market=salesman.market).all()
+            else:
+                products = Product.objects.filter(category__market=salesman.market, name__icontains=search).all()
+            return render(request, 'list_products_for_salesman.html', {'products': products, 'search': search})
+    return redirect('/login-salesman')
+
+
+def sale_product_details(request, product_id):
+    product = Product.objects.get(id=product_id)
+    return render(request, 'sale_product_details.html', {'product': product, 'error': 'None'})
+
+
+def update_quantity(request, product_id):
+    if request.method == 'POST':
+        product = Product.objects.get(id=product_id)
+        new_quantity = request.POST.get('quantity')
+        product.quantity = new_quantity
+        product.save()
+    return redirect('/sale-product-details/' + str(product_id))
+
+
+def add_new_product(request):
+    if request.user.is_authenticated:
+        if Salesman.objects.filter(user=request.user).exists():
+            salesman = Salesman.objects.get(user=request.user)
+            form = AddProductForm()
+            categories = Category.objects.filter(market=salesman.market).all()
+            form.fields['category'].choices = [(category.id, category.name) for category in categories]
+            if request.method == 'POST':
+                f = AddProductForm(request.POST, request.FILES)
+                form.fields['category'].choices = [(category.id, category.name) for category in categories]
+                if f.is_valid():
+                    product = f.save(commit=False)
+                    product.image = f.cleaned_data['image']
+                    product.save()
+                    return redirect('/sale-products')
+            return render(request, 'add_new_product.html', {'form': form})
+    return redirect('/login-salesman')
+
+
+def list_orders(request):
+    if request.user.is_authenticated:
+        if Salesman.objects.filter(user=request.user).exists():
+            salesman = Salesman.objects.get(user=request.user)
+            pickup_orders = PickUpOrder.objects.filter(market=salesman.market).all()
+            delivery_orders = DeliveryOrder.objects.filter(market=salesman.market).all()
+            return render(request, 'list_orders.html',
+                          {'pickup_orders': pickup_orders, 'delivery_orders': delivery_orders})
+    return redirect('/login-salesman')
+
+
+def pickup_order_details(request, order_id):
+    order = PickUpOrder.objects.get(id=order_id)
+    order_items = PickUpOrderItem.objects.filter(order=order).all()
+    total = 0
+    for order_item in order_items:
+        total += order_item.product.price * order_item.quantity
+    return render(request, 'pickup_order_details.html', {'order': order, 'order_items': order_items, 'total': total})
+
+
+def delivery_order_details(request, order_id):
+    order = DeliveryOrder.objects.get(id=order_id)
+    order_items = DeliveryOrderItem.objects.filter(order=order).all()
+    total = 0
+    for order_item in order_items:
+        total += order_item.product.price * order_item.quantity
+    return render(request, 'delivery_order_details.html', {'order': order, 'order_items': order_items, 'total': total})

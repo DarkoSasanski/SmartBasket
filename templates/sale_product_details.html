@@ -1,0 +1,53 @@
+{% extends "salesman_base.html" %}
+{% block title %}Product Details{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-1"></div>
+            <div class="col-md-3">
+                <img src="{{ MEDIA_URL }}{{ product.image.url }}" alt="{{ product.name }}" class="h-100">
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-7">
+                <h3>{{ product.name }}</h3>
+                <p class="text-secondary">Цена: {{ product.price }} MKD</p>
+                <p class="text-secondary">Достапност:
+                    {% if product.quantity > 0 %}
+                        <span class="text-success">Во залиха</span>
+                    {% else %}
+                        <span class="text-danger">Нема во залиха</span>
+                    {% endif %}
+                </p>
+                <p class="text-secondary">Категорија: {{ product.category.name }}</p>
+                <p class="text-secondary">Опис: <br />
+                    {{ product.description }}
+                </p>
+                <form action="{% url 'update-quantity' product.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="number" name="quantity" id="quantity" class="form-control" value="{{ product.quantity }}" min="0">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="submit" class="w-100 btn btn-danger mt-2">Ажурирај</button>
+                        </div>
+                    </div>
+                    {% if error != 'None' %}
+                        <div class="row">
+                            <div class="col-md-12 text-danger">
+                                {{ error }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

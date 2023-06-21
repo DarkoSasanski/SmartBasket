@@ -1,0 +1,67 @@
+{% extends "salesman_base.html" %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="text-danger fw-bold">Нарачки</h2>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h3 class="text-danger fw-bold text-center">Нарачки за достава</h3>
+                <table class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Купувач</th>
+                            <th>Датум</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in delivery_orders %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ d.first_name }} {{ d.last_name }}</td>
+                                <td>{{ d.date_created }}</td>
+                                <td><a href="{% url 'delivery-order-details' d.id %}" class="btn btn-danger">Детали</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                    <h3 class="text-danger text-center fw-bold">Нарачки за подигнување</h3>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Купувач</th>
+                                <th>Датум</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in pickup_orders %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ d.first_name }} {{ d.last_name }}</td>
+                                    <td>{{ d.date_created }}</td>
+                                    <td><a href="{% url 'pickup-order-details' d.id %}" class="btn btn-danger">Детали</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+        </div>
+
+
+    </div>
+{% endblock %}

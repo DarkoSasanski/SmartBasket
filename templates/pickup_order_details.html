@@ -1,0 +1,56 @@
+{% extends "salesman_base.html" %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="text-danger fw-bold">Нарачкa</h2>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-4 pt-4">
+                <p><span class="fw-bold">Купувач</span>: {{ order.first_name }} {{ order.last_name }}</p>
+                <p><span class="fw-bold">Контакт телефон</span>: {{order.phone_number}}</p>
+                <p><span class="fw-bold">Датум на нарачка</span>: {{ order.date_created }}</p>
+                <p><span class="fw-bold">Датум на подигнување</span>: {{ order.date_of_pickup }}</p>
+            </div>
+            <div class="col-md-8">
+                <table class="table table-striped mt-4">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Производ</th>
+                            <th>Цена</th>
+                            <th>Количина</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.product.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td class="fw-bold">Вкупно</td>
+                            <td></td>
+                            <td>{{ total }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
