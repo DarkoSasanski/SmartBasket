@@ -31,7 +31,7 @@
             {% for m in markets %}
                 <div class="col-md-4 text-center">
                     <div class="card  ms-auto me-auto" style="width: 18rem;">
-                      <img src="{{ MEDIA_URL }}{{ m.image.url }}" class="card-img-top" style="height: 20rem" alt="...">
+                      <img src="{{ MEDIA_URL }}{{ m.image.url }}" class="card-img-top" style="height: 15rem" alt="...">
                       <div class="card-body">
                         <h5 class="card-title text-center fw-bold mb-4" style="font-size: 2rem">{{ m.name }}</h5>
                         <a href="/categories/{{ m.id }}" class="btn btn-danger">Избери</a>

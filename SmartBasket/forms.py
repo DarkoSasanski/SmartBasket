@@ -94,3 +94,19 @@ class DeliveryOrderForm(forms.ModelForm):
         super(DeliveryOrderForm, self).__init__(*args, **kwargs)
         for v in self.visible_fields():
             v.field.widget.attrs['class'] = 'form-control'
+            if v.name == 'payment_option':
+                v.field.widget.attrs['class'] = 'form-select'
+
+
+class PaymentForm(forms.Form):
+    card = forms.CharField(max_length=19, min_length=19, required=True,
+                           widget=forms.TextInput(attrs={'placeholder': '1234 5678 9012 3456'}))
+    cvv = forms.CharField(max_length=3, min_length=3, required=True,
+                          widget=forms.TextInput(attrs={'placeholder': 'CVV'}))
+    expiry_data = forms.CharField(max_length=5, min_length=5, required=True,
+                                  widget=forms.TextInput(attrs={'placeholder': 'MM/YY'}))
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentForm, self).__init__(*args, **kwargs)
+        for v in self.visible_fields():
+            v.field.widget.attrs['class'] = 'form-control'

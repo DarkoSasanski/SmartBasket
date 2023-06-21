@@ -55,17 +55,17 @@
             {% if cart_items.count > 0 %}
                 <div class="row mt-5">
                     <div class="col-md-12 text-center">
-                        <a class="btn btn-danger" href="/create-pickup/{{ cart.id }}">Означи ја нарачката за подигнување</a>
+                        <a class="btn btn-danger" href="/create-pickup-order">Означи ја нарачката за подигнување</a>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-12 text-center">
-                        <a class="btn btn-danger" href="/create-delivery/{{ cart.id }}">Означи ја нарачката за испорака</a>
+                        <a class="btn btn-danger" href="/create-delivery-order">Означи ја нарачката за испорака</a>
                     </div>
                 </div>
                 <div class="row mt-3 mb-5">
                     <div class="col-md-12 text-center">
-                        <a class="btn btn-danger" href="/empty-cart/{{ cart.id }}">Испразни ја нарачката</a>
+                        <a class="btn btn-danger" href="/empty-cart">Испразни ја кошничката</a>
                     </div>
                 </div>
                 {% endif %}

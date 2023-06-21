@@ -1,0 +1,39 @@
+{% extends "customer_base.html" %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <h2 class="text-danger text-center fw-bold">Наплата</h2>
+            </div>
+        <div class="row mt-5">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            {{ form.card.label }}
+                            {{ form.card }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.expiry_data.label }}
+                            {{ form.expiry_data }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.cvv.label }}
+                            {{ form.cvv }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-danger w-100">Наплати</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

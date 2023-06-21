@@ -170,7 +170,8 @@ def add_to_cart(request, product_id):
             if int(request.POST.get('quantity')) > product.quantity:
                 return render(request, 'product_details.html', {'product': product, 'error': 'Not enough quantity'})
             if cart_item is None:
-                cart_item = ShoppingCartItem(shopping_cart=cart, product=product, quantity=int(request.POST.get('quantity')))
+                cart_item = ShoppingCartItem(shopping_cart=cart, product=product,
+                                             quantity=int(request.POST.get('quantity')))
             else:
                 cart_item.quantity += int(request.POST.get('quantity'))
             product.quantity -= int(request.POST.get('quantity'))
@@ -186,7 +187,7 @@ def list_shopping_cart(request):
             customer = Customer.objects.get(user=request.user)
             cart = ShoppingCart.objects.filter(customer=customer).first()
             if cart is None:
-                return render(request, 'list_shopping_cart.html', {'cart': cart, 'error': 'No shopping cart'})
+                return render(request, 'list_shopping_cart.html', {'cart': cart, 'error': 'Вашата кошница е празна'})
             cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
             total = 0
             for cart_item in cart_items:
@@ -196,14 +197,27 @@ def list_shopping_cart(request):
     return redirect('/login-cust')
 
 
-def delete_cart(request, cart_id):
-    cart = ShoppingCart.objects.get(id=cart_id)
-    cart.delete()
+def delete_cart(request):
+    if request.user.is_authenticated:
+        if Customer.objects.filter(user=request.user).exists():
+            customer = Customer.objects.get(user=request.user)
+            cart = ShoppingCart.objects.filter(customer=customer).first()
+            if cart is None:
+                return redirect('/markets')
+            cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
+            for cart_item in cart_items:
+                product = cart_item.product
+                product.quantity += cart_item.quantity
+                product.save()
+            cart.delete()
     return redirect('/markets')
 
 
 def delete_cart_item(request, cart_item_id):
     cart_item = ShoppingCartItem.objects.get(id=cart_item_id)
+    product = cart_item.product
+    product.quantity += cart_item.quantity
+    product.save()
     cart_item.delete()
     return redirect('/shopping-cart')
 
@@ -214,13 +228,13 @@ def create_pickup_order(request):
             customer = Customer.objects.get(user=request.user)
             cart = ShoppingCart.objects.filter(customer=customer).first()
             if cart is None:
-                return redirect('/shopping-cart')
+                return redirect('/markets')
             cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
             total = 0
             for cart_item in cart_items:
                 total += cart_item.product.price * cart_item.quantity
             if request.method == 'POST':
-                f=PickUpOrderForm(request.POST)
+                f = PickUpOrderForm(request.POST)
                 if f.is_valid():
                     order = PickUpOrder(
                         first_name=f.cleaned_data['first_name'],
@@ -239,7 +253,56 @@ def create_pickup_order(request):
                         )
                         order_item.save()
                     cart.delete()
-                    return redirect('/success_order')
+                    return render(request, "success_order.html")
             return render(request, 'create_pickup_order.html', {'cart': cart, 'cart_items': cart_items,
                                                                 'total': total, 'form': PickUpOrderForm()})
     return redirect('/login-cust')
+
+
+def create_delivery_order(request):
+    if request.user.is_authenticated:
+        if Customer.objects.filter(user=request.user).exists():
+            customer = Customer.objects.get(user=request.user)
+            cart = ShoppingCart.objects.filter(customer=customer).first()
+            if cart is None:
+                return redirect('/markets')
+            cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
+            total = 0
+            for cart_item in cart_items:
+                total += cart_item.product.price * cart_item.quantity
+            if request.method == 'POST':
+                f = DeliveryOrderForm(request.POST)
+                if f.is_valid():
+                    order = DeliveryOrder(
+                        first_name=f.cleaned_data['first_name'],
+                        last_name=f.cleaned_data['last_name'],
+                        phone_number=f.cleaned_data['phone_number'],
+                        address=f.cleaned_data['address'],
+                        payment_option=f.cleaned_data['payment_option'],
+                        market=cart.market,
+                        delivered=False
+                    )
+                    order.save()
+                    for cart_item in cart_items:
+                        order_item = DeliveryOrderItem(
+                            order=order,
+                            product=cart_item.product,
+                            quantity=cart_item.quantity,
+                        )
+                        order_item.save()
+                    cart.delete()
+                    if order.payment_option == 'online':
+                        return redirect('/payment')
+                    return render(request, "success_order.html")
+            return render(request, 'create_delivery_order.html', {'cart': cart, 'cart_items': cart_items,
+                                                                  'total': total, 'form': DeliveryOrderForm()})
+    return redirect('/login-cust')
+
+
+def payment(request):
+    form = PaymentForm()
+    if request.method == 'POST':
+        f = PaymentForm(request.POST)
+        if f.is_valid():
+            return render(request, 'success_order.html')
+    return render(request, 'payment.html', {'form': form})
