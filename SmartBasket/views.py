@@ -1,3 +1,4 @@
+from django.contrib import auth
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from .forms import *
@@ -59,7 +60,7 @@ def login_deliveryman(request):
             if user is not None:
                 if Deliveryman.objects.filter(user=user).exists():
                     login(request, user)
-                    return redirect('/index')
+                    return redirect('/deliveryman-orders')
         err = 'Invalid username or password'
     return render(request, 'login_deliveryman.html', {'form': form, 'error': err})
 
@@ -411,3 +412,33 @@ def mark_as_picked_up(request, order_id):
     order.picked_up = True
     order.save()
     return redirect('/pickup-order-details/' + str(order_id))
+
+
+def delivery_man_orders(request):
+    if request.user.is_authenticated:
+        if Deliveryman.objects.filter(user=request.user).exists():
+            deliveryman = Deliveryman.objects.get(user=request.user)
+            orders = DeliveryOrder.objects.filter(deliveryman=deliveryman).all()
+            return render(request, 'deliveryman_orders.html', {'orders': orders})
+
+
+def deliveryman_order_details(request, order_id):
+    order = DeliveryOrder.objects.get(id=order_id)
+    order_items = DeliveryOrderItem.objects.filter(order=order).all()
+    total = 0
+    for order_item in order_items:
+        total += order_item.product.price * order_item.quantity
+    return render(request, 'deliveryman_order_details.html',
+                  {'order': order, 'order_items': order_items, 'total': total})
+
+
+def mark_as_delivered(request, order_id):
+    order = DeliveryOrder.objects.get(id=order_id)
+    order.delivered = True
+    order.save()
+    return redirect('/deliveryman-order-details/' + str(order_id))
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect('/')

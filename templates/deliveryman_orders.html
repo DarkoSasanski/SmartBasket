@@ -1,0 +1,50 @@
+{% extends "deliveryman_base.html" %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="text-danger fw-bold">Доделени нарачки</h2>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <table class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Купувач</th>
+                            <th>Датум</th>
+                            <th>Статус</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in orders %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ d.first_name }} {{ d.last_name }}</td>
+                                <td>{{ d.date_created }}</td>
+                                <td>
+                                    {% if d.delivered %}
+                                        <span class="text-success">Доставена</span>
+                                    {% else %}
+                                        <span class="text-danger">Недоставена</span>
+                                    {% endif %}
+                                </td>
+                                <td><a href="{% url 'deliveryman-order-details' d.id %}" class="btn btn-danger">Детали</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}

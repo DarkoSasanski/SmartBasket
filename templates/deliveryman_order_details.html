@@ -1,4 +1,4 @@
-{% extends "salesman_base.html" %}
+{% extends "deliveryman_base.html" %}
 {% block title %}Order{% endblock %}
 {% block content %}
     <div class="container mt-4">
@@ -9,25 +9,33 @@
         </div>
         <div class="row">
             <div class="col-md-12 text-center">
-                <h2 class="text-danger fw-bold">Нарачкa</h2>
+                <h2 class="text-danger fw-bold">Нарачкa за достава</h2>
             </div>
         </div>
         <div class="row mt-4">
             <div class="col-md-4 pt-4">
                 <p><span class="fw-bold">Купувач</span>: {{ order.first_name }} {{ order.last_name }}</p>
                 <p><span class="fw-bold">Контакт телефон</span>: {{order.phone_number}}</p>
+                <p><span class="fw-bold">Адреса</span>: {{ order.address }}</p>
+                <p><span class="fw-bold">Начин на плаќање</span>:
+                    {% if order.payment_option == 'door' %}
+                        Наплата при достава
+                    {% endif %}
+                    {% if order.payment_option == 'online' %}
+                        Kартичка
+                    {% endif %}
+                </p>
                 <p><span class="fw-bold">Датум на нарачка</span>: {{ order.date_created }}</p>
-                <p><span class="fw-bold">Датум на подигнување</span>: {{ order.date_of_pickup }}</p>
                 <p><span class="fw-bold">Статус</span>:
-                    {% if order.picked_up %}
-                        Подигната
+                    {% if order.delivered %}
+                        Доставена
                     {% else %}
-                        Неподигната
+                        Не е доставена
                     {% endif %}
                 </p>
                 <p>
-                    {% if not order.picked_up %}
-                        <a href="{% url 'mark-as-picked-up' order.id %}" class="btn btn-danger">Означи ја како подигната</a>
+                    {% if not order.delivered %}
+                        <a href="{% url 'mark-as-delivered' order.id %}" class="btn btn-danger">Означи ја како доставена</a>
                     {% endif %}
                 </p>
             </div>
