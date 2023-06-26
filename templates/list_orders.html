@@ -21,6 +21,7 @@
                             <th>#</th>
                             <th>Купувач</th>
                             <th>Датум</th>
+                            <th>Статус</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -30,6 +31,13 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ d.first_name }} {{ d.last_name }}</td>
                                 <td>{{ d.date_created }}</td>
+                                <td>
+                                    {% if d.delivered %}
+                                        <span class="text-success">Доставена</span>
+                                    {% else %}
+                                        <span class="text-danger">Недоставена</span>
+                                    {% endif %}
+                                </td>
                                 <td><a href="{% url 'delivery-order-details' d.id %}" class="btn btn-danger">Детали</a></td>
                             </tr>
                         {% endfor %}
@@ -44,6 +52,7 @@
                                 <th>#</th>
                                 <th>Купувач</th>
                                 <th>Датум</th>
+                                <th>Статус</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -53,6 +62,13 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ d.first_name }} {{ d.last_name }}</td>
                                     <td>{{ d.date_created }}</td>
+                                    <td>
+                                        {% if d.picked_up %}
+                                            <span class="text-success">Подигната</span>
+                                        {% else %}
+                                            <span class="text-danger">Неподигната</span>
+                                        {% endif %}
+                                    </td>
                                     <td><a href="{% url 'pickup-order-details' d.id %}" class="btn btn-danger">Детали</a></td>
                                 </tr>
                             {% endfor %}

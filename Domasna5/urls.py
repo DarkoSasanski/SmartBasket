@@ -48,4 +48,6 @@ urlpatterns = [
     path('orders', list_orders, name='orders'),
     path('pickup-order-details/<str:order_id>', pickup_order_details, name='pickup-order-details'),
     path('delivery-order-details/<str:order_id>', delivery_order_details, name='delivery-order-details'),
+    path('assign-order/<str:order_id>', assign_order, name='assign-order'),
+    path('mark-as-picked-up/<str:order_id>', mark_as_picked_up, name='mark-as-picked-up'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

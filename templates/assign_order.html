@@ -1,0 +1,36 @@
+{% extends "salesman_base.html" %}
+{% block title %}Assign Order{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 text-danger fw-bold">SmartBasket</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="text-danger fw-bold">Додели нарачка</h2>
+            </div>
+        </div>
+        <div class="row mt-4 justify-content-center">
+            <div class="col-md-4">
+                <form method="post" action="{% url 'assign-order' order.id %}">
+                    {% csrf_token %}
+                    <select name="deliveryman" class="form-select">
+                        {% for deliveryman in delivery_men %}
+                            {% if order.deliveryman.id == deliveryman.id %}
+                                <option value="{{ deliveryman.id }}" selected>{{ deliveryman.user.first_name }} {{ deliveryman.user.last_name }}</option>
+                            {% else %}
+                                <option value="{{ deliveryman.id }}">{{ deliveryman.user.first_name }} {{ deliveryman.user.last_name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-danger w-100 mt-3">Додели</button>
+                </form>
+            </div>
+
+        </div>
+
+
+    </div>
+{% endblock %}

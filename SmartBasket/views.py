@@ -41,7 +41,7 @@ def login_salesman(request):
             if user is not None:
                 if Salesman.objects.filter(user=user).exists():
                     login(request, user)
-                    return redirect('/index')
+                    return redirect('/sale-products')
         err = 'Invalid username or password'
     return render(request, 'login_salesman.html', {'form': form, 'error': err})
 
@@ -166,7 +166,7 @@ def add_to_cart(request, product_id):
                 cart.save()
             elif cart.market != product.category.market:
                 return render(request, 'product_details.html',
-                              {'product': product, 'error': 'Already has a shopping cart for a different market'})
+                              {'product': product, 'error': 'You already have a shopping cart for a different market'})
             cart_item = ShoppingCartItem.objects.filter(shopping_cart=cart, product=product).first()
             if int(request.POST.get('quantity')) > product.quantity:
                 return render(request, 'product_details.html', {'product': product, 'error': 'Not enough quantity'})
@@ -234,6 +234,10 @@ def create_pickup_order(request):
             total = 0
             for cart_item in cart_items:
                 total += cart_item.product.price * cart_item.quantity
+            form = PickUpOrderForm()
+            form.initial['first_name'] = customer.user.first_name
+            form.initial['last_name'] = customer.user.last_name
+            form.initial['phone_number'] = customer.phone_number
             if request.method == 'POST':
                 f = PickUpOrderForm(request.POST)
                 if f.is_valid():
@@ -256,7 +260,7 @@ def create_pickup_order(request):
                     cart.delete()
                     return render(request, "success_order.html")
             return render(request, 'create_pickup_order.html', {'cart': cart, 'cart_items': cart_items,
-                                                                'total': total, 'form': PickUpOrderForm()})
+                                                                'total': total, 'form': form})
     return redirect('/login-cust')
 
 
@@ -271,6 +275,11 @@ def create_delivery_order(request):
             total = 0
             for cart_item in cart_items:
                 total += cart_item.product.price * cart_item.quantity
+            form = DeliveryOrderForm()
+            form.initial['first_name'] = customer.user.first_name
+            form.initial['last_name'] = customer.user.last_name
+            form.initial['phone_number'] = customer.phone_number
+            form.initial['address'] = customer.address
             if request.method == 'POST':
                 f = DeliveryOrderForm(request.POST)
                 if f.is_valid():
@@ -296,7 +305,7 @@ def create_delivery_order(request):
                         return redirect('/payment')
                     return render(request, "success_order.html")
             return render(request, 'create_delivery_order.html', {'cart': cart, 'cart_items': cart_items,
-                                                                  'total': total, 'form': DeliveryOrderForm()})
+                                                                  'total': total, 'form': form})
     return redirect('/login-cust')
 
 
@@ -350,9 +359,9 @@ def add_new_product(request):
                     product = f.save(commit=False)
                     product.image = f.cleaned_data['image']
                     product.save()
-                    return redirect('/sale-products')
+                    return render(request, 'success_product.html')
             return render(request, 'add_new_product.html', {'form': form})
-    return redirect('/login-salesman')
+    return redirect('/login-sale')
 
 
 def list_orders(request):
@@ -363,7 +372,7 @@ def list_orders(request):
             delivery_orders = DeliveryOrder.objects.filter(market=salesman.market).all()
             return render(request, 'list_orders.html',
                           {'pickup_orders': pickup_orders, 'delivery_orders': delivery_orders})
-    return redirect('/login-salesman')
+    return redirect('/login-sale')
 
 
 def pickup_order_details(request, order_id):
@@ -382,3 +391,23 @@ def delivery_order_details(request, order_id):
     for order_item in order_items:
         total += order_item.product.price * order_item.quantity
     return render(request, 'delivery_order_details.html', {'order': order, 'order_items': order_items, 'total': total})
+
+
+def assign_order(request, order_id):
+    delivery_men = Deliveryman.objects.all()
+    order = DeliveryOrder.objects.get(id=order_id)
+    if request.method == 'POST':
+        deliveryman_id = request.POST.get('deliveryman')
+        deliveryman = Deliveryman.objects.get(id=deliveryman_id)
+        order = DeliveryOrder.objects.get(id=order_id)
+        order.deliveryman = deliveryman
+        order.save()
+        return redirect('/delivery-order-details/' + str(order_id))
+    return render(request, 'assign_order.html', {'delivery_men': delivery_men, "order": order})
+
+
+def mark_as_picked_up(request, order_id):
+    order = PickUpOrder.objects.get(id=order_id)
+    order.picked_up = True
+    order.save()
+    return redirect('/pickup-order-details/' + str(order_id))
