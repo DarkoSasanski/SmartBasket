@@ -55,10 +55,10 @@
                 <h3>Вашата нарачка</h3>
                 {% for i in cart_items %}
                     <p class="text-secondary">{{ i.product.name }} {{ i.product.price }} x {{ i.quantity }} =
-                        {% widthratio i.product.price 1 i.quantity %}
+                        {% widthratio i.product.price 1 i.quantity %} MKD
                     </p>
                 {% endfor %}
-                <p class="text-secondary">Вкупно: {{ total }} MKD</p>
+                <p class="text-secondary fw-bold">Вкупно: {{ total }} MKD</p>
             </div>
         </div>
 

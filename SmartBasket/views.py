@@ -25,7 +25,7 @@ def login_customer(request):
                 if Customer.objects.filter(user=user).exists():
                     login(request, user)
                     return redirect('/markets')
-        err = 'Invalid username or password'
+        err = 'Невалидно корисничко име или лозинка'
     return render(request, 'login_customer.html', {'form': form, 'error': err})
 
 
@@ -43,7 +43,7 @@ def login_salesman(request):
                 if Salesman.objects.filter(user=user).exists():
                     login(request, user)
                     return redirect('/sale-products')
-        err = 'Invalid username or password'
+        err = 'Невалидно корисничко име или лозинка'
     return render(request, 'login_salesman.html', {'form': form, 'error': err})
 
 
@@ -61,7 +61,7 @@ def login_deliveryman(request):
                 if Deliveryman.objects.filter(user=user).exists():
                     login(request, user)
                     return redirect('/deliveryman-orders')
-        err = 'Invalid username or password'
+        err = 'Невалидно корисничко име или лозинка'
     return render(request, 'login_deliveryman.html', {'form': form, 'error': err})
 
 
@@ -79,7 +79,7 @@ def register_customer(request):
             )
             customer.save()
             return redirect('/login-cust')
-        err = 'Invalid input'
+        err = 'Невалиден влез'
     return render(request, 'register_customer.html', {'form': form, 'error': err})
 
 
@@ -100,7 +100,7 @@ def register_salesman(request):
             )
             salesman.save()
             return redirect('/login-sale')
-        err = 'Invalid input'
+        err = 'Невалиден влез'
     return render(request, 'register_salesman.html', {'form': form, 'error': err})
 
 
@@ -116,7 +116,7 @@ def register_deliveryman(request):
             )
             deliveryman.save()
             return redirect('/login-del')
-        err = 'Invalid input'
+        err = 'Невалиден влез'
     return render(request, 'register_deliveryman.html', {'form': form, 'error': err})
 
 
@@ -167,10 +167,10 @@ def add_to_cart(request, product_id):
                 cart.save()
             elif cart.market != product.category.market:
                 return render(request, 'product_details.html',
-                              {'product': product, 'error': 'You already have a shopping cart for a different market'})
+                              {'product': product, 'error': 'Веќе имате креирано кошничка во друга продавница'})
             cart_item = ShoppingCartItem.objects.filter(shopping_cart=cart, product=product).first()
             if int(request.POST.get('quantity')) > product.quantity:
-                return render(request, 'product_details.html', {'product': product, 'error': 'Not enough quantity'})
+                return render(request, 'product_details.html', {'product': product, 'error': 'Недоволно достапни продукти'})
             if cart_item is None:
                 cart_item = ShoppingCartItem(shopping_cart=cart, product=product,
                                              quantity=int(request.POST.get('quantity')))

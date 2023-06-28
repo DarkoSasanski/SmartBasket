@@ -45,7 +45,7 @@ class Category(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.name} at {self.market}'
+        return f'{self.name} во {self.market}'
 
 
 class Product(models.Model):
@@ -65,7 +65,7 @@ class ShoppingCart(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.customer}\'s cart at market {self.market}'
+        return f'Кошничката на {self.customer}\' во маркетот {self.market}'
 
 
 class ShoppingCartItem(models.Model):
@@ -87,7 +87,7 @@ class PickUpOrder(models.Model):
     date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f'Pick up order for {self.first_name} {self.last_name}'
+        return f'Нарачка за подигнување на {self.first_name} {self.last_name}'
 
 
 class DeliveryOrder(models.Model):
@@ -106,7 +106,7 @@ class DeliveryOrder(models.Model):
     date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f'Delivery order for {self.first_name} {self.last_name}'
+        return f'Нарачка за достава на {self.first_name} {self.last_name}'
 
 
 class PickUpOrderItem(models.Model):

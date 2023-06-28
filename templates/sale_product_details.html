@@ -15,16 +15,16 @@
             <div class="col-md-1"></div>
             <div class="col-md-7">
                 <h3>{{ product.name }}</h3>
-                <p class="text-secondary">Цена: {{ product.price }} MKD</p>
-                <p class="text-secondary">Достапност:
+                <p class="text-secondary"><span class="fw-bold">Цена</span>: {{ product.price }} MKD</p>
+                <p class="text-secondary"><span class="fw-bold">Достапност</span>:
                     {% if product.quantity > 0 %}
-                        <span class="text-success">Во залиха</span>
+                        <span class="text-success"><span class="fw-bold">Во залиха</span>
                     {% else %}
-                        <span class="text-danger">Нема во залиха</span>
+                        <span class="text-danger"><span class="fw-bold">Нема во залиха</span>
                     {% endif %}
                 </p>
-                <p class="text-secondary">Категорија: {{ product.category.name }}</p>
-                <p class="text-secondary">Опис: <br />
+                <p class="text-secondary"><span class="fw-bold">Категорија</span>: {{ product.category.name }}</p>
+                <p class="text-secondary"><span class="fw-bold">Опис</span>: <br />
                     {{ product.description }}
                 </p>
                 <form action="{% url 'update-quantity' product.id %}" method="post">
