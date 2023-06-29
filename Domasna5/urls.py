@@ -54,4 +54,4 @@ urlpatterns = [
     path('mark-as-delivered/<str:order_id>', mark_as_delivered, name='mark-as-delivered'),
     path('deliveryman-order-details/<str:order_id>', deliveryman_order_details, name='deliveryman-order-details'),
     path('logout', logout, name='logout'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
