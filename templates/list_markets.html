@@ -18,6 +18,7 @@
                     <div class="input-group mb-3">
                         {% if search %}
                             <input type="text" class="form-control" placeholder="Пребарај маркети" name="search" value="{{ search }}"/>
+                            <a href="/markets" class="btn btn-outline-danger">Исчисти</a>
                         {% endif %}
                         {% if not search %}
                             <input type="text" class="form-control" placeholder="Пребарај маркети" name="search" />
@@ -29,8 +30,8 @@
         </div>
         <div class="row mt-4 mb-5">
             {% for m in markets %}
-                <div class="col-md-4 mt-3 text-center">
-                    <div class="card  ms-auto me-auto" style="width: 18rem;">
+                <div class="col-md-4 mt-4 text-center">
+                    <div class="card  ms-auto me-auto" style="width: 19rem;">
                       <img src="{{ MEDIA_URL }}{{ m.image.url }}" class="card-img-top" style="height: 15rem" alt="...">
                       <div class="card-body">
                         <h5 class="card-title text-center fw-bold mb-4" style="font-size: 2rem">{{ m.name }}</h5>

@@ -15,11 +15,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                {% if request.user.is_authenticated %}
-                  <li>
-                        <a class="nav-link" href="/logout">Одјави се</a>
-                  </li>
-                {% endif %}
+
                 <li class="nav-item">
                   <a class="nav-link" aria-current="page" href="/deliveryman-orders">Нарачки&nbsp;
                       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
@@ -27,6 +23,11 @@
                         </svg>
                   </a>
                 </li>
+               {% if request.user.is_authenticated %}
+                  <li>
+                        <a class="nav-link" href="/logout">Одјави се</a>
+                  </li>
+                {% endif %}
           </ul>
         </div>
       </div>

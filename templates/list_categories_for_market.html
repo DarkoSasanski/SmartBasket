@@ -18,6 +18,7 @@
                     <div class="input-group mb-3">
                         {% if search %}
                             <input type="text" class="form-control" placeholder="Пребарај категории" name="search" value="{{ search }}"/>
+                            <a href="/categories/{{ market.id }}" class="btn btn-outline-danger">Исчисти</a>
                         {% endif %}
                         {% if not search %}
                             <input type="text" class="form-control" placeholder="Пребарај категории" name="search" />

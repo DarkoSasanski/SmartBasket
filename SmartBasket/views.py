@@ -328,8 +328,8 @@ def list_products_for_salesman(request):
                 products = Product.objects.filter(category__market=salesman.market).all()
             else:
                 products = Product.objects.filter(category__market=salesman.market, name__icontains=search).all()
-            return render(request, 'list_products_for_salesman.html', {'products': products, 'search': search})
-    return redirect('/login-salesman')
+            return render(request, 'list_products_for_salesman.html', {'products': products, 'search': search, 'market' : salesman.market})
+    return redirect('/login-sale')
 
 
 def sale_product_details(request, product_id):

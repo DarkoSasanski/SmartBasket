@@ -19,6 +19,7 @@
                         {% if search %}
                             <input type="text" class="form-control" placeholder="Пребарај производи" name="search"
                                    value="{{ search }}"/>
+                            <a href="/products/{{ category.id }}" class="btn btn-outline-danger">Исчисти</a>
                         {% endif %}
                         {% if not search %}
                             <input type="text" class="form-control" placeholder="Пребарај производи" name="search"/>
@@ -29,34 +30,40 @@
             </div>
         </div>
         <div class="row mt-4 mb-5">
-            {% for p in products %}
-                <div class="col-md-4 mt-3">
-                    <div class="card ms-auto me-auto" style="width: 18rem;">
-                        <img src="{{ MEDIA_URL }}{{ p.image.url }}" class="card-img-top" style="height: 15rem"
-                             alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title text-center fw-bold mb-4" style="font-size: 2rem">{{ p.name }}</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="card-text">{{ p.price }} MKD</p>
+            {% if products.count > 0 %}
+                {% for p in products %}
+                    <div class="col-md-4 mt-4">
+                        <div class="card ms-auto me-auto" style="width: 19rem; height: 27rem">
+                            <img src="{{ MEDIA_URL }}{{ p.image.url }}" class="card-img-top" style="height: 15rem"
+                                 alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title text-center fw-bold mb-4" style="font-size: 2rem">{{ p.name }}</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="card-text">{{ p.price }} MKD</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p style="text-align: right">
+                                            {% if p.quantity > 0 %}
+                                                <span class="badge bg-success">Во залиха</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Нема во залиха</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <p style="text-align: right">
-                                        {% if p.quantity > 0 %}
-                                            <span class="badge bg-success">Во залиха</span>
-                                        {% else %}
-                                            <span class="badge bg-danger">Нема во залиха</span>
-                                        {% endif %}
-                                    </p>
+                                <div class="text-center">
+                                    <a href="/product-detail/{{ p.id }}" class="btn btn-danger">Избери</a>
                                 </div>
-                            </div>
-                            <div class="text-center">
-                                <a href="/product-detail/{{ p.id }}" class="btn btn-danger">Избери</a>
                             </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-12 text-center">
+                    <h3 class="text-danger fw-bold">Нема достапни производи</h3>
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}
