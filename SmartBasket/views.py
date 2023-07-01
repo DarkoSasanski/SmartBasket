@@ -38,7 +38,6 @@ def login_salesman(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
-            print(user)
             if user is not None:
                 if Salesman.objects.filter(user=user).exists():
                     login(request, user)
@@ -56,7 +55,6 @@ def login_deliveryman(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
-            print(user)
             if user is not None:
                 if Deliveryman.objects.filter(user=user).exists():
                     login(request, user)
@@ -170,7 +168,8 @@ def add_to_cart(request, product_id):
                               {'product': product, 'error': 'Веќе имате креирано кошничка во друга продавница'})
             cart_item = ShoppingCartItem.objects.filter(shopping_cart=cart, product=product).first()
             if int(request.POST.get('quantity')) > product.quantity:
-                return render(request, 'product_details.html', {'product': product, 'error': 'Недоволно достапни продукти'})
+                return render(request, 'product_details.html',
+                              {'product': product, 'error': 'Недоволно достапни продукти'})
             if cart_item is None:
                 cart_item = ShoppingCartItem(shopping_cart=cart, product=product,
                                              quantity=int(request.POST.get('quantity')))
@@ -212,7 +211,7 @@ def delete_cart(request):
                 product.quantity += cart_item.quantity
                 product.save()
             cart.delete()
-    return redirect('/markets')
+    return redirect('/login-cust')
 
 
 def delete_cart_item(request, cart_item_id):
@@ -328,7 +327,8 @@ def list_products_for_salesman(request):
                 products = Product.objects.filter(category__market=salesman.market).all()
             else:
                 products = Product.objects.filter(category__market=salesman.market, name__icontains=search).all()
-            return render(request, 'list_products_for_salesman.html', {'products': products, 'search': search, 'market' : salesman.market})
+            return render(request, 'list_products_for_salesman.html',
+                          {'products': products, 'search': search, 'market': salesman.market})
     return redirect('/login-sale')
 
 
@@ -420,6 +420,7 @@ def delivery_man_orders(request):
             deliveryman = Deliveryman.objects.get(user=request.user)
             orders = DeliveryOrder.objects.filter(deliveryman=deliveryman).all()
             return render(request, 'deliveryman_orders.html', {'orders': orders})
+    return redirect('/login-del')
 
 
 def deliveryman_order_details(request, order_id):
