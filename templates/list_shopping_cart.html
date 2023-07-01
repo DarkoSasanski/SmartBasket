@@ -37,7 +37,9 @@
                             <td>{{ item.product.price }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>
-                                <a class="btn btn-danger" href="/delete-cart-item/{{ item.id }}">Отстрани</a>
+                                {% if cart_items.count > 1 %}
+                                    <a class="btn btn-danger" href="/delete-cart-item/{{ item.id }}">Отстрани</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -63,12 +65,13 @@
                         <a class="btn btn-danger" href="/create-delivery-order">Означи ја нарачката за испорака</a>
                     </div>
                 </div>
-                <div class="row mt-3 mb-5">
-                    <div class="col-md-12 text-center">
-                        <a class="btn btn-danger" href="/empty-cart">Испразни ја кошничката</a>
-                    </div>
+            {% endif %}
+
+            <div class="row mt-3 mb-5">
+                <div class="col-md-12 text-center">
+                    <a class="btn btn-danger" href="/empty-cart">Испразни ја кошничката</a>
                 </div>
-                {% endif %}
+            </div>
         {% endif %}
 
     </div>

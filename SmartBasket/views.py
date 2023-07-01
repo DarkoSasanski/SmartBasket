@@ -129,6 +129,8 @@ def list_markets(request):
 
 def list_categories_for_market(request, market_id):
     search = request.GET.get('search')
+    if not Market.objects.filter(id=market_id).exists():
+        return redirect('/markets')
     market = Market.objects.get(id=market_id)
     if search is None or search == '':
         categories = Category.objects.filter(market=market).all()
@@ -140,6 +142,8 @@ def list_categories_for_market(request, market_id):
 
 def list_products_for_category(request, category_id):
     search = request.GET.get('search')
+    if not Category.objects.filter(id=category_id).exists():
+        return redirect('/markets')
     category = Category.objects.get(id=category_id)
     if search is None or search == '':
         products = Product.objects.filter(category=category).all()
@@ -150,11 +154,15 @@ def list_products_for_category(request, category_id):
 
 
 def product_details(request, product_id):
+    if not Product.objects.filter(id=product_id).exists():
+        return redirect('/markets')
     product = Product.objects.get(id=product_id)
     return render(request, 'product_details.html', {'product': product, 'error': 'None'})
 
 
 def add_to_cart(request, product_id):
+    if not Product.objects.filter(id=product_id).exists():
+        return redirect('/markets')
     product = Product.objects.get(id=product_id)
     if request.user.is_authenticated:
         if Customer.objects.filter(user=request.user).exists():
@@ -211,15 +219,18 @@ def delete_cart(request):
                 product.quantity += cart_item.quantity
                 product.save()
             cart.delete()
+            return redirect('/markets')
     return redirect('/login-cust')
 
 
 def delete_cart_item(request, cart_item_id):
-    cart_item = ShoppingCartItem.objects.get(id=cart_item_id)
-    product = cart_item.product
-    product.quantity += cart_item.quantity
-    product.save()
-    cart_item.delete()
+    if ShoppingCartItem.objects.filter(id=cart_item_id).exists():
+        cart_item = ShoppingCartItem.objects.get(id=cart_item_id)
+        if ShoppingCartItem.objects.filter(shopping_cart=cart_item.shopping_cart).count() > 1:
+            product = cart_item.product
+            product.quantity += cart_item.quantity
+            product.save()
+            cart_item.delete()
     return redirect('/shopping-cart')
 
 
@@ -231,6 +242,8 @@ def create_pickup_order(request):
             if cart is None:
                 return redirect('/markets')
             cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
+            if cart_items.count() == 0:
+                return redirect('/markets')
             total = 0
             for cart_item in cart_items:
                 total += cart_item.product.price * cart_item.quantity
@@ -272,6 +285,8 @@ def create_delivery_order(request):
             if cart is None:
                 return redirect('/markets')
             cart_items = ShoppingCartItem.objects.filter(shopping_cart=cart).all()
+            if cart_items.count() == 0:
+                return redirect('/markets')
             total = 0
             for cart_item in cart_items:
                 total += cart_item.product.price * cart_item.quantity
@@ -333,11 +348,15 @@ def list_products_for_salesman(request):
 
 
 def sale_product_details(request, product_id):
+    if not Product.objects.filter(id=product_id).exists():
+        return redirect('/sale-products')
     product = Product.objects.get(id=product_id)
     return render(request, 'sale_product_details.html', {'product': product, 'error': 'None'})
 
 
 def update_quantity(request, product_id):
+    if not Product.objects.filter(id=product_id).exists():
+        return redirect('/sale-products')
     if request.method == 'POST':
         product = Product.objects.get(id=product_id)
         new_quantity = request.POST.get('quantity')
@@ -377,6 +396,8 @@ def list_orders(request):
 
 
 def pickup_order_details(request, order_id):
+    if not PickUpOrder.objects.filter(id=order_id).exists():
+        return redirect('/orders')
     order = PickUpOrder.objects.get(id=order_id)
     order_items = PickUpOrderItem.objects.filter(order=order).all()
     total = 0
@@ -386,6 +407,8 @@ def pickup_order_details(request, order_id):
 
 
 def delivery_order_details(request, order_id):
+    if not DeliveryOrder.objects.filter(id=order_id).exists():
+        return redirect('/orders')
     order = DeliveryOrder.objects.get(id=order_id)
     order_items = DeliveryOrderItem.objects.filter(order=order).all()
     total = 0
@@ -395,6 +418,8 @@ def delivery_order_details(request, order_id):
 
 
 def assign_order(request, order_id):
+    if not DeliveryOrder.objects.filter(id=order_id).exists():
+        return redirect('/orders')
     delivery_men = Deliveryman.objects.all()
     order = DeliveryOrder.objects.get(id=order_id)
     if request.method == 'POST':
@@ -408,6 +433,8 @@ def assign_order(request, order_id):
 
 
 def mark_as_picked_up(request, order_id):
+    if not PickUpOrder.objects.filter(id=order_id).exists():
+        return redirect('/orders')
     order = PickUpOrder.objects.get(id=order_id)
     order.picked_up = True
     order.save()
@@ -424,6 +451,8 @@ def delivery_man_orders(request):
 
 
 def deliveryman_order_details(request, order_id):
+    if not DeliveryOrder.objects.filter(id=order_id).exists():
+        return redirect('/deliveryman-orders')
     order = DeliveryOrder.objects.get(id=order_id)
     order_items = DeliveryOrderItem.objects.filter(order=order).all()
     total = 0
@@ -434,6 +463,8 @@ def deliveryman_order_details(request, order_id):
 
 
 def mark_as_delivered(request, order_id):
+    if not DeliveryOrder.objects.filter(id=order_id).exists():
+        return redirect('/deliveryman-orders')
     order = DeliveryOrder.objects.get(id=order_id)
     order.delivered = True
     order.save()
